@@ -18,7 +18,12 @@ defmodule PhoenixSwagger.Plug.SwaggerUI do
   swagger-ui should be shown with your swagger spec loaded.
   """
 
-  use Plug.Router
+  # init_mode: :runtime avoids baking Plug.Static.init/1's result into the
+  # compiled pipeline. The shape of that result changed between Plug 1.18
+  # (2-tuple `only_rules`) and Plug 1.19 (3-tuple), so a stale compile-time
+  # value would crash Plug.Static.path_status/2 at runtime. Runtime init
+  # always matches the loaded Plug version.
+  use Plug.Router, init_mode: :runtime
   alias Plug.Conn
 
   # Serve static assets before routing
